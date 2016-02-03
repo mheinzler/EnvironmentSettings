@@ -7,12 +7,15 @@ sDEFAULT_ENV = {}
 
 
 def collect_variables(envs_file, envs):
+    savedPath = os.getcwd()
+    os.chdir(os.path.dirname(sublime.active_window().project_file_name()))
+
     variables_set = ([],[])
 
     # collect the variables from an external file
     if envs_file:
         cap_regex = re.compile("^(?:(?i)export|set)\s([a-zA-Z0-9%_$/]*)\=([a-zA-Z0-9%_$/\\\~;:]+)", re.M|re.X|re.S)
-        envf = open(envs_file, 'r')
+        envf = open(os.path.abspath(envs_file), 'r')
         lines = envf.read()
         envf.close()
 
@@ -27,10 +30,12 @@ def collect_variables(envs_file, envs):
         for key, value in envs.items():
             variables_set[1].append((key, value))
 
+    os.chdir(savedPath)
     return variables_set
 
 
 def print_result(variables_set, prefix):
+    print("\n", "SWITCH TO PROJECT: ", sublime.active_window().project_file_name())
     max_key_length = 0
     for varsets in variables_set:
         for pair in varsets:
