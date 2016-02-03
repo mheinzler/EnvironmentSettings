@@ -110,15 +110,20 @@ class ProjectEnvironmentListener(sublime_plugin.EventListener):
             if sets.get('print_output'):
                 print("\nRESET ENVIRONMENT TO DEFAULT STATE.")
             os.environ = copy.deepcopy(sDEFAULT_ENV)
-
-            os.environ["SUBLIME_ACTIVE_PROJECT"] = sublime.active_window().project_file_name()
-            self.set_project_environment()
+            project_name = sublime.active_window().project_file_name()
+            if project_name:
+                os.environ["SUBLIME_ACTIVE_PROJECT"] = sublime.active_window().project_file_name()
+                self.set_project_environment()
+            else:
+                os.environ["SUBLIME_ACTIVE_PROJECT"] = ""
+                if sets.get('print_output'):
+                    print("EnvironmentSettings: project file not found")
 
 
     def set_project_environment(self):
         window = sublime.active_window()
         proj_data = window.project_data()
-        if not 'settings' in proj_data:
+        if not proj_data or not 'settings' in proj_data:
             return
 
         proj_sets = proj_data['settings']
