@@ -1,12 +1,29 @@
 import os
 import re
 import copy
+import platform
 import sublime, sublime_plugin
 
 sDEFAULT_ENV = {}
 
 
-def collect_variables(envs_file, envs):
+def get_settings(settings):
+    envs_file_dict = settings.get('env_file')
+    envs_dict = settings.get('env')
+
+    envs_file = None
+    envs = None
+    if envs_file_dict and platform.system() in envs_file_dict:
+        envs_file = envs_file_dict[platform.system()]
+    if envs_dict and platform.system() in envs_dict:
+        envs = envs_dict[platform.system()]
+
+    return (envs_file, envs)
+    
+
+def collect_variables(settings):
+    envs_file, envs = get_settings(settings)
+
     savedPath = os.getcwd()
     os.chdir(os.path.dirname(sublime.active_window().project_file_name()))
 
@@ -35,7 +52,8 @@ def collect_variables(envs_file, envs):
 
 
 def print_result(variables_set, prefix):
-    print("\n", "SWITCH TO PROJECT: ", sublime.active_window().project_file_name())
+    print("SYSTEM {}".format(platform.system()))
+    print("SWITCH TO PROJECT: ", sublime.active_window().project_file_name())
     max_key_length = 0
     for varsets in variables_set:
         for pair in varsets:
@@ -60,10 +78,8 @@ def plugin_loaded():
     os.environ["SUBLIME_ACTIVE_PROJECT"] = "" #sublime.active_window().project_file_name()
 
     sets = sublime.load_settings("EnvironmentSettings.sublime-settings")
-    envs_file = sets.get('env_file')
-    envs = sets.get('env')
-
-    variables_set = collect_variables(envs_file, envs)
+    
+    variables_set = collect_variables(sets)
 
     # now set the environment with the data collected above 
     for varsets in variables_set:
@@ -100,19 +116,13 @@ class ProjectEnvironmentListener(sublime_plugin.EventListener):
 
 
     def set_project_environment(self):
-        envs = None
-        envs_file = ""
-
         window = sublime.active_window()
         proj_data = window.project_data()
-        if 'settings' in proj_data:
-            proj_sets = proj_data['settings']
-            if 'env' in proj_sets:
-                envs = proj_sets['env']
-            if 'env_file' in proj_sets:
-                envs_file = proj_sets['env_file']
+        if not 'settings' in proj_data:
+            return
 
-        variables_set = collect_variables(envs_file, envs)
+        proj_sets = proj_data['settings']
+        variables_set = collect_variables(proj_sets)
 
         # now set the environment with the data collected above 
         for varsets in variables_set:
