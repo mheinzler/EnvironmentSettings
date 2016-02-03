@@ -33,4 +33,4 @@ For example:
 
 ### Note: ###
 
-The variables in "env_files" are always set first. This means that if "env" can potentially override what "env_file" did.
+The variables in "env_files" are always set first. This means that "env" can potentially override what "env_file" did.
