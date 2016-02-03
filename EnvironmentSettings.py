@@ -31,7 +31,7 @@ def collect_variables(settings):
 
     # collect the variables from an external file
     if envs_file:
-        cap_regex = re.compile("^(?:(?i)export|set)\s([a-zA-Z0-9%_$/]*)\=([a-zA-Z0-9%_$/\\\~;:]+)", re.M|re.X|re.S)
+        cap_regex = re.compile("^(?:(?i)export|set)\s([a-zA-Z0-9%_$/]*)\=([a-zA-Z0-9%$_\-~/\\\;:\.]+)", re.M|re.X|re.S)
         envf = open(os.path.abspath(envs_file), 'r')
         lines = envf.read()
         envf.close()
@@ -84,7 +84,7 @@ def plugin_loaded():
     # now set the environment with the data collected above 
     for varsets in variables_set:
         for pair in varsets:
-            os.environ[pair[0]] = pair[1]
+            os.environ[pair[0]] = os.path.expandvars(pair[1])
 
     if sets.get('print_output'):
         print_result(variables_set, "SETTING STATIC CUSTOM ENVIRONMENT")
@@ -127,7 +127,7 @@ class ProjectEnvironmentListener(sublime_plugin.EventListener):
         # now set the environment with the data collected above 
         for varsets in variables_set:
             for pair in varsets:
-                os.environ[pair[0]] = pair[1]
+                os.environ[pair[0]] = os.path.expandvars(pair[1])
 
         # print out the result if the settings allow it
         sets = sublime.load_settings("EnvironmentSettings.sublime-settings")
