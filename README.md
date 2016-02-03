@@ -1,8 +1,10 @@
-# EnvironmentSettings #
-
-### Description: ###
-
+EnvironmentSettings
+===
 A plugin for **SublimeText 3** that allows to set environment variables in the .sublime-project file.
+- - -
+
+Description:
+---
 
 The variables can be set in the "settings" part of a .sublime-project file.
 Here two entries can be created:
@@ -12,10 +14,11 @@ Here two entries can be created:
 * **env** is a dictionary. Each key:value pair will be set as environment variable.
 
 Both the entries can, actually must, specify which operative system the variables are for.
-the possible values are the same used by Sublime in configuration files:
+the possible values are the ones returned by the Python's function platform.system(). The value may change depending on the system you are but
+the common and most probable are:
 
 * Linux
-* OSX
+* Darwin (Mac OSX)
 * Windows
 
 At least one must be present.
@@ -35,7 +38,7 @@ For example:
     "env_file": 
     {
       "Windows": "%HOME%/Documents/myEnv.bat",
-      "OSX": "~/Documents/myEnv.sh",
+      "Darwin": "~/Documents/myEnv.sh",
       "Linux": "~/Documents/myEnv.sh"
     },
     "env":
@@ -44,7 +47,7 @@ For example:
       {
         "PATH": "%PATH%;%HOME%/Documents/MyTool"
       },
-      "OSX": 
+      "Darwin": 
       {
         "PATH": "$PATH:~/Documents/MyTool"
       },
@@ -57,7 +60,8 @@ For example:
 }
 ```
 
-### User Variables ###
+User Variables
+---
 
 Beside setting variables per project, it's also possible to set variables for all the projects and sections of Sublime.
 To do that, just open your user EnvironmentSettings.sublime-settings and set the variables in there.
@@ -73,7 +77,7 @@ example:
   "env_file": 
   {
     "Windows": "%HOME%/Documents/myEnv.bat",
-    "OSX": "~/Documents/myEnv.sh",
+    "Darwin": "~/Documents/myEnv.sh",
     "Linux": "~/Documents/myEnv.sh"
   },
   "env":
@@ -82,7 +86,7 @@ example:
     {
       "PATH": "%PATH%;%HOME%/Documents/MyTool"
     },
-    "OSX": 
+    "Darwin": 
     {
       "PATH": "$PATH:~/Documents/MyTool"
     },
@@ -94,7 +98,8 @@ example:
 }
 ```
 
-### Settings: ###
+Settings
+---
 
 there is only one custom settings to change in EnvironmentSettings.sublime-settings and it's for debugging porpoises:
 
@@ -102,19 +107,21 @@ there is only one custom settings to change in EnvironmentSettings.sublime-setti
 
 When this is set to true, some informations are printed out to console.
 
-### Note: ###
+Note
+---
 
 The variables in **env_file** are always set first. This means that **env** can potentially override what **env_file** did.
 
-### Installation: ###
+Installation
+---
 
-#### Using Package Control: ####
+#### Using Package Control:
 
 Go to Preferences -> Package Control -> Install Package then type into the text-box "Environment Settings"
 
 Click on it, the package will be installed and ready for use.
 
-#### Using Mercurial: ####
+#### Using Mercurial:
 
 Locate your Sublime Text Packages directory by using the menu item Preferences -> Browse Packages.
 
