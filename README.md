@@ -14,20 +14,20 @@ For example:
 ```
 #!json
 {
-	"folders":
-	[
-		{
-			"path": "my/path"
-		}
-	],
-	"settings":
-	{
-		"env_file": "~/Documents/myEnv.sh",
-                "env":
-		{
-			"PATH": "%PATH%;~/Documents/MyTool"
-		}
-	}
+  "folders":
+  [
+    {
+      "path": "my/path"
+    }
+  ],
+  "settings":
+  {
+    "env_file": "~/Documents/myEnv.sh",
+    "env":
+    {
+      "PATH": "%PATH%:~/Documents/MyTool"
+    }
+  }
 }
 ```
 
