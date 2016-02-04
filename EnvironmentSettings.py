@@ -31,7 +31,7 @@ def collect_variables(settings):
 
     # collect the variables from an external file
     if envs_file:
-        cap_regex = re.compile("^(?:(?i)export|set)\s([a-zA-Z0-9%_$/]*)\=([a-zA-Z0-9%$_\-~/\\\;:\.]+)", re.M|re.X|re.S)
+        cap_regex = re.compile("^(?:(?i)export|(?i)set)\s([a-zA-Z0-9%_$/]*)\=([a-zA-Z0-9%$_\-~/\\\;:\.]+)", re.M|re.X|re.S)
         envf = open(os.path.abspath(envs_file), 'r')
         lines = envf.read()
         envf.close()
@@ -75,8 +75,6 @@ def print_result(variables_set, prefix):
 
 # this is fired only once when the plugin gets loaded
 def plugin_loaded():
-    os.environ["SUBLIME_ACTIVE_PROJECT"] = "" #sublime.active_window().project_file_name()
-
     sets = sublime.load_settings("EnvironmentSettings.sublime-settings")
     
     variables_set = collect_variables(sets)
@@ -93,56 +91,56 @@ def plugin_loaded():
     sDEFAULT_ENV = copy.deepcopy(os.environ)
 
 
+def set_project_environment():
+    window = sublime.active_window()
+    proj_data = window.project_data()
+    if not proj_data or not 'settings' in proj_data:
+        return
+
+    # reset the environment
+    sets = sublime.load_settings("EnvironmentSettings.sublime-settings")
+    if sets.get('print_output'):
+        print("RESET ENVIRONMENT TO DEFAULT STATE.")
+    os.environ = copy.deepcopy(sDEFAULT_ENV)
+
+    # collect the new variables
+    proj_sets = proj_data['settings']
+    variables_set = collect_variables(proj_sets)
+
+    # now set the environment with the data collected above 
+    for varsets in variables_set:
+        for pair in varsets:
+            os.environ[pair[0]] = os.path.expandvars(pair[1])
+
+    # print out the result if the settings allow it
+    if sets.get('print_output'):
+        print_result(variables_set, "SETTING PROJECT ENVIRONMENT")
+
 
 class ProjectEnvironmentListener(sublime_plugin.EventListener):
+    def __init__(self, *args, **kwds):
+        super(ProjectEnvironmentListener, self).__init__(*args, **kwds)
+
+        self.active_project = sublime.active_window().project_file_name()
+
     def on_activated(self, view):
         st_version = int(sublime.version())
         if st_version < 3000:
             # before version 3 it was impossible to get access to projects settings
             return
 
-        if "SUBLIME_ACTIVE_PROJECT" in os.environ and \
-           os.environ["SUBLIME_ACTIVE_PROJECT"] == sublime.active_window().project_file_name():
+        if self.active_project == sublime.active_window().project_file_name():
             return
         else:
-            # reset the environment
-            sets = sublime.load_settings("EnvironmentSettings.sublime-settings")
-            if sets.get('print_output'):
-                print("\nRESET ENVIRONMENT TO DEFAULT STATE.")
-            os.environ = copy.deepcopy(sDEFAULT_ENV)
-            project_name = sublime.active_window().project_file_name()
-            if project_name:
-                os.environ["SUBLIME_ACTIVE_PROJECT"] = sublime.active_window().project_file_name()
-                self.set_project_environment()
+            self.active_project = sublime.active_window().project_file_name()
+            if self.active_project:
+                set_project_environment()
             else:
-                os.environ["SUBLIME_ACTIVE_PROJECT"] = ""
+                sets = sublime.load_settings("EnvironmentSettings.sublime-settings")
                 if sets.get('print_output'):
                     print("EnvironmentSettings: project file not found")
 
 
-    def set_project_environment(self):
-        window = sublime.active_window()
-        proj_data = window.project_data()
-        if not proj_data or not 'settings' in proj_data:
-            return
-
-        proj_sets = proj_data['settings']
-        variables_set = collect_variables(proj_sets)
-
-        # now set the environment with the data collected above 
-        for varsets in variables_set:
-            for pair in varsets:
-                os.environ[pair[0]] = os.path.expandvars(pair[1])
-
-        # print out the result if the settings allow it
-        sets = sublime.load_settings("EnvironmentSettings.sublime-settings")
-        if sets.get('print_output'):
-            print_result(variables_set, "SETTING PROJECT ENVIRONMENT")
-        
-
-
-class EnvSetCheckCommand(sublime_plugin.WindowCommand):
-    def run(self, edit):
-        print(sDEFAULT_ENV)
-        print(sDEFAULT_ENV==os.environ)
-        
+class ForceProjectEnvironmentCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        set_project_environment()

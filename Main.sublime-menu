@@ -23,6 +23,10 @@
 								"args": {
 									"file": "${packages}/User/EnvironmentSettings.sublime-settings"
 								}
+							},
+							{
+								"caption": "Apply Project Environment",
+								"command": "force_project_environment"
 							}
 						]
 					}

@@ -1,0 +1,7 @@
+[   
+    {"id": "end"},  
+    {
+        "caption": "Apply Project Environment",
+        "command": "force_project_environment"
+    }
+]
