@@ -27,10 +27,11 @@ def collect_variables(settings):
     savedPath = os.getcwd()
     os.chdir(os.path.dirname(sublime.active_window().project_file_name()))
 
-    variables_set = ([],[])
+    variables_set = ["",[],[]]
 
     # collect the variables from an external file
     if envs_file:
+        variables_set[0] = os.path.abspath(envs_file)
         cap_regex = re.compile("^(?:(?i)export|(?i)set)\s([a-zA-Z0-9%_$/]*)\=([a-zA-Z0-9%$_\-~/\\\;:\.]+)", re.M|re.X|re.S)
         envf = open(os.path.abspath(envs_file), 'r')
         lines = envf.read()
@@ -40,12 +41,12 @@ def collect_variables(settings):
         
         for m in it:
             key, value = m.groups()
-            variables_set[0].append((key, value))
+            variables_set[1].append((key, value))
 
     # collect the variables in the dictionary "envs"
     if envs:
         for key, value in envs.items():
-            variables_set[1].append((key, value))
+            variables_set[2].append((key, str(value)))
 
     os.chdir(savedPath)
     return variables_set
@@ -55,19 +56,19 @@ def print_result(variables_set, prefix):
     print("SYSTEM {}".format(platform.system()))
     print("SWITCH TO PROJECT: ", sublime.active_window().project_file_name())
     max_key_length = 0
-    for varsets in variables_set:
+    for varsets in variables_set[1:]:
         for pair in varsets:
             if len(pair[0]) > max_key_length:
                 max_key_length = len(pair[0])
 
     log_format = '{:>'+str(max_key_length)+'} = {}'
 
-    print("\n{} FROM FILE:".format(prefix))
-    for pair in variables_set[0]:
+    print("\n{} FROM FILE: {}".format(prefix, variables_set[0]))
+    for pair in variables_set[1]:
         print( log_format.format(pair[0], pair[1]) )
     
     print("\n{}:".format(prefix))
-    for pair in variables_set[1]:
+    for pair in variables_set[2]:
         print( log_format.format(pair[0], pair[1]) )
     
     print()
@@ -80,7 +81,7 @@ def plugin_loaded():
     variables_set = collect_variables(sets)
 
     # now set the environment with the data collected above 
-    for varsets in variables_set:
+    for varsets in variables_set[1:]:
         for pair in varsets:
             os.environ[pair[0]] = os.path.expandvars(pair[1])
 
@@ -108,7 +109,7 @@ def set_project_environment():
     variables_set = collect_variables(proj_sets)
 
     # now set the environment with the data collected above 
-    for varsets in variables_set:
+    for varsets in variables_set[1:]:
         for pair in varsets:
             os.environ[pair[0]] = os.path.expandvars(pair[1])
 
