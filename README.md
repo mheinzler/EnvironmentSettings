@@ -6,16 +6,30 @@ A plugin for **SublimeText 3** that allows to set environment variables in the .
 Description:
 ---
 
+Variables set with **EnvironmentSettings** are available throughout Sublime. Builds, scripts, even other plugins can relay and use them.
+
+For example I use it to...
+
+  * set *PYTHONPATH* and have python run successfully scripts that use my custom tools, from within Sublime. [Anaconda](https://packagecontrol.io/packages/Anaconda) picks up my *PYTHONPATH*  too and nicely present code completion on my custom code.
+  
+  * Set *PATH* to point to some custom tools, for example [FabricEngine](http://fabricengine.com/)'s KL and then have a custom build that can call `kl $file` and run kl code from within Sublime
+
+  * Define all the possible custom environment variables that my project need. (obviously!)
+
+The very nice thing about **EnvironmentSettings** is that all the variables it sets are set per project. **EnvironmentSettings** can catch when a Sublime's project change and re-set the environment variables accordingly. Even more, if you have two or more Sublime's windows open at the same time, each time you get focus on one of them, **EnvironmentSettings** will run and re-set the variables. All this is completely transparent to the user.
+
+Setup Project Variables
+---
+
 The variables can be set in the "settings" part of a .sublime-project file.
 Here two entries can be created:
 
-* **env_file** to point to an external shell file. If this file sets variables, those variables will be set also in Sublime.
-  Paths can be relative to the project file itself (ex: "../../env.sh")
-* **env** is a dictionary. Each key:value pair will be set as environment variable.
+  * **env_file** to point to an external shell file. If this file sets variables, those variables will be set also in Sublime.
+    Paths can be relative to the project file itself (ex: "../../env.sh")
+  * **env** is a dictionary. Each key:value pair will be set as environment variable.
 
 Both the entries can, actually must, specify which operative system the variables are for.
-the possible values are the ones returned by the Python's function platform.system(). The value may change depending on the system you are but
-the common and most probable are:
+the possible values are the ones returned by the Python's function platform.system(). The value may change depending on the system you are but the common and most probable are:
 
 * Linux
 * Darwin (Mac OSX)
