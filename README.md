@@ -14,7 +14,7 @@ For example I use it to...
   
   * Set *PATH* to point to some custom tools, for example [FabricEngine](http://fabricengine.com/)'s KL and then have a custom build that can call `kl $file` and run kl code from within Sublime
 
-  * Define all the possible custom environment variables that my project need. (obviously!)
+  * Define all the possible custom environment variables that my project needs. (obviously!)
 
 The very nice thing about **EnvironmentSettings** is that all the variables it sets are set per project. **EnvironmentSettings** can catch when a Sublime's project change and re-set the environment variables accordingly. Even more, if you have two or more Sublime's windows open at the same time, each time you get focus on one of them, **EnvironmentSettings** will run and re-set the variables. All this is completely transparent to the user.
 
