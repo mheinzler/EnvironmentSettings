@@ -13,8 +13,8 @@ def get_settings(settings):
 
     envs_file = None
     envs = None
-    if envs_file_dict and platform.system() in envs_file_dict:
-        envs_file = envs_file_dict[platform.system()]
+    if envs_file_dict and platform.system() in envs_file_dict:    
+        envs_file = os.path.expanduser(envs_file_dict[platform.system()])
     if envs_dict and platform.system() in envs_dict:
         envs = envs_dict[platform.system()]
 
@@ -32,7 +32,7 @@ def collect_variables(settings):
     # collect the variables from an external file
     if envs_file:
         variables_set[0] = os.path.abspath(envs_file)
-        cap_regex = re.compile("^(?:(?i)export|(?i)set)\s([a-zA-Z0-9%_$/]*)\=([a-zA-Z0-9%$_\-~/\\\;:\.]+)", re.M|re.X|re.S)
+        cap_regex = re.compile("^(?:(?i)export|(?i)set)\s([a-zA-Z0-9%_$/]*)\=(\"?[a-zA-Z0-9%$_\-~/\\\;:\.\s]+\"?)", re.M|re.X|re.S)
         envf = open(os.path.abspath(envs_file), 'r')
         lines = envf.read()
         envf.close()
