@@ -32,7 +32,7 @@ def collect_variables(settings):
     # collect the variables from an external file
     if envs_file:
         variables_set[0] = os.path.abspath(envs_file)
-        cap_regex = re.compile(ur'^(?:(?i)export|(?i)set)\s([a-zA-Z0-9%_$/]*)\=(["\'])?(.*?)(?(2)\2.*?|(?:\s.*)*?)$', re.MULTILINE | re.VERBOSE | re.IGNORECASE)
+        cap_regex = re.compile(r'^(?:(?i)export|(?i)set)\s([a-zA-Z0-9%_$/]*)\=(["\'])?(.*?)(?(2)\2.*?|(?:\s.*)*?)$', re.MULTILINE | re.VERBOSE | re.IGNORECASE)
         envf = open(os.path.abspath(envs_file), 'r')
         lines = envf.read()
         envf.close()
