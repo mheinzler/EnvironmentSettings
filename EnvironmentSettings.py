@@ -32,7 +32,15 @@ def collect_variables(settings):
     # collect the variables from an external file
     if envs_file:
         variables_set[0] = os.path.abspath(envs_file)
-        cap_regex = re.compile("(?:(?:export|set)\s)?([\w%$/]*)=((?<![\\\\])['\"])?((?:.(?!(?(2)(?<![\\\\])\\2|(?<![\\\\])\s)))*.?).*?", re.MULTILINE | re.IGNORECASE)
+
+        regex_dict = {
+            "set_or_export": r"^(?:(?i)export|(?i)set)",
+            "key": r"([\w%$/]*)",
+            "rest": r"((?<![\\])['\"])?((?:.(?!(?(2)(?<![\\])\\2|(?<![\\])\s)))*.?).*?"
+        }
+
+        cap_regex = re.compile(r"{set_or_export}\s{key}={rest}".format(**regex_dict), re.MULTILINE)
+        # cap_regex = re.compile("(?:(?:export|set)\s)?([\w%$/]*)=((?<![\\\\])['\"])?((?:.(?!(?(2)(?<![\\\\])\\2|(?<![\\\\])\s)))*.?).*?", re.MULTILINE | re.IGNORECASE)
         envf = open(os.path.abspath(envs_file), 'r')
         lines = envf.read()
         envf.close()
@@ -111,6 +119,7 @@ def set_project_environment():
     # now set the environment with the data collected above 
     for varsets in variables_set[1:]:
         for pair in varsets:
+            print(pair)
             os.environ[pair[0]] = os.path.expandvars(pair[1])
 
     # print out the result if the settings allow it
