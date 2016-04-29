@@ -1,4 +1,4 @@
-Changes in 1.0.5
+Changes in 1.0.6
 ================
 
     * Better regular expression that catches variables inside quotes in a .sh, .bat or equivalent file. Ex: `export MYVAR="this that"`
