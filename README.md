@@ -21,14 +21,16 @@ The very nice thing about **EnvironmentSettings** is that all the variables it s
 Setup Project Variables
 ---
 
-The variables can be set in the "settings" part of a .sublime-project file.
+The variables can be set in the "settings" part of a .sublime-project file.  
 Here two entries can be created:
 
-  * **env_file** to point to an external shell file. If this file sets variables, those variables will be set also in Sublime.
+  * **env_file**   
+    To point to an external shell file. If this file sets variables, those variables will be set also in Sublime.  
     Paths can be relative to the project file itself (ex: "../../env.sh")
-  * **env** is a dictionary. Each key:value pair will be set as environment variable.
+  * **env**  
+    is a dictionary. Each key:value pair will be set as environment variable.
 
-Both the entries can, actually must, specify which operative system the variables are for.
+Both the entries can, actually must, specify which operative system the variables are for.  
 the possible values are the ones returned by the Python's function platform.system(). The value may change depending on the system you are but the common and most probable are:
 
 * Linux
@@ -77,15 +79,15 @@ For example:
 User Variables
 ---
 
-Beside setting variables per project, it's also possible to set variables for all the projects and sections of Sublime.
+Beside setting variables per project, it's also possible to set variables for all the projects and sections of Sublime.  
 To do that, just open your user EnvironmentSettings.sublime-settings and set the variables in there.
 
 To open the Users's EnvironmentSettings.sublime-settings go to Preferences -> Package Settings -> Environment Settings -> Settings (User)
 
-example:
+example:  
+User's EnvironmentSettings.sublime-settings contents
 ```
 #!json
-// User's EnvironmentSettings.sublime-settings contents
 {
   "print_output": true,
   "env_file": 
@@ -115,11 +117,24 @@ example:
 Settings
 ---
 
-there is only one custom settings to change in EnvironmentSettings.sublime-settings and it's for debugging porpoises:
+there few settings you can change in EnvironmentSettings.sublime-settings:
 
-**print_output**
+* **print_output**  
+  When this is set to true, some informations are printed out to console.  
+  CiaoCiao
 
-When this is set to true, some informations are printed out to console.
+* **set_sublime_variables**  
+  If true some variables from within Sublime will be set too  
+  this variables are:  
+  "project_path", "project", "project_name", "project_base_name", "packages"
+
+* **sublime_variables_prefix**  
+  It may be useful to add a prefix to those variables so that they don't confict with yours
+
+* **sublime_variables_capitalized**  
+  Those variables can be all capitalised if you wish.  
+  ex: "project" -> "PROJECT"
+    
 
 Note
 ---

@@ -4,7 +4,7 @@ import copy
 import platform
 import sublime, sublime_plugin
 
-sDEFAULT_ENV = {}
+sDEFAULT_ENV = copy.deepcopy(os.environ) #{}
 
 
 def get_settings(settings):
@@ -27,7 +27,23 @@ def collect_variables(settings):
     savedPath = os.getcwd()
     os.chdir(os.path.dirname(sublime.active_window().project_file_name()))
 
-    variables_set = ["",[],[]]
+    variables_set = ["",[],[],[]]
+
+    # Set variables from within sublime (that are available only in builds and plugins)
+    # note: we will collect only those variables that actually makes sense to have
+    # avoiding for example variables sucha s "file", "file_path" or "project_extension"
+    sets = sublime.load_settings("EnvironmentSettings.sublime-settings")
+    if sets.get('set_sublime_variables'):
+        window = sublime.active_window()
+        sublime_vars = window.extract_variables()
+        keys = ["project_path", "project", "project_name", "project_base_name", "packages"]
+        prefix = sets.get('sublime_variables_prefix', default='')
+        capit = sets.get('sublime_variables_capitalized', default=False)
+        for key in keys:
+            env_key = prefix+key
+            if capit:
+                env_key = env_key.upper()  
+            variables_set[1].append((env_key, sublime_vars[key]))
 
     # collect the variables from an external file
     if envs_file:
@@ -49,12 +65,12 @@ def collect_variables(settings):
         
         for m in it:
             key, quotes, value = m.groups()
-            variables_set[1].append((key, value))
+            variables_set[2].append((key, value))
 
     # collect the variables in the dictionary "envs"
     if envs:
         for key, value in envs.items():
-            variables_set[2].append((key, str(value)))
+            variables_set[3].append((key, str(value)))
 
     os.chdir(savedPath)
     return variables_set
@@ -71,12 +87,17 @@ def print_result(variables_set, prefix):
 
     log_format = '{:>'+str(max_key_length)+'} = {}'
 
+    if len(variables_set[1]): #there are varaibles set from sublime's
+        print("\n{} FROM SUBLIME:".format(prefix))
+        for pair in variables_set[1]:
+            print( log_format.format(pair[0], pair[1]) )
+
     print("\n{} FROM FILE: {}".format(prefix, variables_set[0]))
-    for pair in variables_set[1]:
+    for pair in variables_set[2]:
         print( log_format.format(pair[0], pair[1]) )
     
     print("\n{}:".format(prefix))
-    for pair in variables_set[2]:
+    for pair in variables_set[3]:
         print( log_format.format(pair[0], pair[1]) )
     
     print()
@@ -102,6 +123,7 @@ def plugin_loaded():
 
 def set_project_environment():
     window = sublime.active_window()
+
     proj_data = window.project_data()
     if not proj_data or not 'settings' in proj_data:
         return
@@ -119,7 +141,6 @@ def set_project_environment():
     # now set the environment with the data collected above 
     for varsets in variables_set[1:]:
         for pair in varsets:
-            print(pair)
             os.environ[pair[0]] = os.path.expandvars(pair[1])
 
     # print out the result if the settings allow it
