@@ -8,12 +8,9 @@ Description:
 
 Variables set with **EnvironmentSettings** are available throughout Sublime. Builds, scripts, even other plugins can relay and use them.
 
-For example I use it to...
-
+For example I use it to...  
   * set *PYTHONPATH* and have python run successfully scripts that use my custom tools, from within Sublime. [Anaconda](https://packagecontrol.io/packages/Anaconda) picks up my *PYTHONPATH*  too and nicely present code completion on my custom code.
-  
   * Set *PATH* to point to some custom tools, for example [FabricEngine](http://fabricengine.com/)'s KL and then have a custom build that can call `kl $file` and run kl code from within Sublime
-
   * Define all the possible custom environment variables that my project needs. (obviously!)
 
 The very nice thing about **EnvironmentSettings** is that all the variables it sets are set per project. **EnvironmentSettings** can catch when a Sublime's project change and re-set the environment variables accordingly. Even more, if you have two or more Sublime's windows open at the same time, each time you get focus on one of them, **EnvironmentSettings** will run and re-set the variables. All this is completely transparent to the user.
@@ -37,8 +34,7 @@ the possible values are the ones returned by the Python's function platform.syst
 * Darwin (Mac OSX)
 * Windows
 
-At least one must be present.
-
+At least one must be present.  
 For example:
 ```
 #!json
@@ -84,7 +80,7 @@ To do that, just open your user EnvironmentSettings.sublime-settings and set the
 
 To open the Users's EnvironmentSettings.sublime-settings go to Preferences -> Package Settings -> Environment Settings -> Settings (User)
 
-example:  
+example:   
 User's EnvironmentSettings.sublime-settings contents
 ```
 #!json
@@ -121,7 +117,6 @@ there few settings you can change in EnvironmentSettings.sublime-settings:
 
 * **print_output**  
   When this is set to true, some informations are printed out to console.  
-  CiaoCiao
 
 * **set_sublime_variables**  
   If true some variables from within Sublime will be set too  
