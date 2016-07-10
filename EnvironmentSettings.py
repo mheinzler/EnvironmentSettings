@@ -24,8 +24,14 @@ def get_settings(settings):
 def collect_variables(settings):
     envs_file, envs = get_settings(settings)
 
+    window = sublime.active_window()
+    sublime_vars = window.extract_variables()
+
     savedPath = os.getcwd()
-    os.chdir(os.path.dirname(sublime.active_window().project_file_name()))
+
+    if "project_path" in sublime_vars:
+        project_path = sublime_vars["project_path"]
+        os.chdir(os.path.dirname(sublime_vars["project_path"]))
 
     variables_set = ["",[],[],[]]
 
@@ -34,8 +40,6 @@ def collect_variables(settings):
     # avoiding for example variables sucha s "file", "file_path" or "project_extension"
     sets = sublime.load_settings("EnvironmentSettings.sublime-settings")
     if sets.get('set_sublime_variables'):
-        window = sublime.active_window()
-        sublime_vars = window.extract_variables()
         keys = ["project_path", "project", "project_name", "project_base_name", "packages"]
         prefix = sets.get('sublime_variables_prefix', default='')
         capit = sets.get('sublime_variables_capitalized', default=False)
