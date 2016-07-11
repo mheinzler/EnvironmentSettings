@@ -31,7 +31,7 @@ def collect_variables(settings):
 
     if "project_path" in sublime_vars:
         project_path = sublime_vars["project_path"]
-        os.chdir(os.path.dirname(sublime_vars["project_path"]))
+        os.chdir(sublime_vars["project_path"])
 
     variables_set = ["",[],[],[]]
 
