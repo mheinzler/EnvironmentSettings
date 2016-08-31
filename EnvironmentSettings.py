@@ -53,24 +53,29 @@ def collect_variables(settings):
     if envs_file:
         variables_set[0] = os.path.abspath(envs_file)
 
-        regex_dict = {
-            "set_or_export": r"^(?:(?i)export|(?i)set)",
-            "key": r"([\w%$/]*)",
-            "rest": r"((?<![\\])['\"])?((?:.(?!(?(2)(?<![\\])\\2|(?<![\\])\s)))*.?).*?"
-        }
-
-        cap_regex = re.compile(r"{set_or_export}\s{key}={rest}".format(**regex_dict), re.MULTILINE)
-        # cap_regex = re.compile("(?:(?:export|set)\s)?([\w%$/]*)=((?<![\\\\])['\"])?((?:.(?!(?(2)(?<![\\\\])\\2|(?<![\\\\])\s)))*.?).*?", re.MULTILINE | re.IGNORECASE)
         envf = open(os.path.abspath(envs_file), 'r')
         lines = envf.read()
         envf.close()
 
-        it = re.finditer(cap_regex, lines)
-        
-        for m in it:
-            key, quotes, value = m.groups()
-            variables_set[2].append((key, value))
+        if(platform.system() == "Windows"):
+            cap_regex = re.compile(r"(?:(?i)set)\s([\w%$/]*)=(.+)", re.MULTILINE)
+            
+            it = re.finditer(cap_regex, lines)
+            for m in it:
+                key, value = m.groups()
+                variables_set[2].append((key, value))
 
+        else: # this is unix
+            cap_regex = re.compile(r"(?:(?i)set)\s([\w%$/]*)=(?:(?![\"'])(\S*)|([\"'])(.+?)(?=\3))", re.MULTILINE)
+
+            it = re.finditer(cap_regex, lines)
+            for m in it:
+                key, value, quote, quotedValue = m.groups()
+                if value:
+                    variables_set[2].append((key, value))
+                else:
+                    variables_set[2].append((key, quotedValue))
+            
     # collect the variables in the dictionary "envs"
     if envs:
         for key, value in envs.items():
