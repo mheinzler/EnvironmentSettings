@@ -1,10 +1,9 @@
-EnvironmentSettings
-===
-A plugin for **SublimeText 3** that allows to set environment variables in the .sublime-project file.
-- - -
+# EnvironmentSettings
 
-Description:
----
+A plugin for **SublimeText 3** that allows to set environment variables in the .sublime-project file.  
+
+- - -
+## Description:
 
 Variables set with **EnvironmentSettings** are available throughout Sublime. Builds, scripts, even other plugins can relay and use them.
 
@@ -16,8 +15,8 @@ For example I use it to...
 
 The very nice thing about **EnvironmentSettings** is that all the variables it sets are set per project. **EnvironmentSettings** can catch when a Sublime's project change and re-set the environment variables accordingly. Even more, if you have two or more Sublime's windows open at the same time, each time you get focus on one of them, **EnvironmentSettings** will run and re-set the variables. All this is completely transparent to the user.
 
-Setup Project Variables
----
+- - -
+## Setup Project Variables
 
 The variables can be set in the "settings" part of a .sublime-project file.  
 Here two entries can be created:
@@ -37,8 +36,7 @@ the possible values are the ones returned by the Python's function platform.syst
 
 At least one must be present.  
 For example:
-```
-#!json
+```json
 {
   "folders":
   [
@@ -73,8 +71,8 @@ For example:
 }
 ```
 
-User Variables
----
+- - -
+## User Variables
 
 Beside setting variables per project, it's also possible to set variables for all the projects and sections of Sublime.  
 To do that, just open your user EnvironmentSettings.sublime-settings and set the variables in there.
@@ -83,8 +81,7 @@ To open the Users's EnvironmentSettings.sublime-settings go to Preferences -> Pa
 
 example:   
 User's EnvironmentSettings.sublime-settings contents
-```
-#!json
+```json
 {
   "print_output": true,
   "env_file": 
@@ -111,10 +108,10 @@ User's EnvironmentSettings.sublime-settings contents
 }
 ```
 
-Settings
----
+- - -
+## Settings
 
-there few settings you can change in EnvironmentSettings.sublime-settings:
+there are few settings you can change in EnvironmentSettings.sublime-settings:
 
 * **print_output**  
   When this is set to true, some informations are printed out to console.  
@@ -131,14 +128,11 @@ there few settings you can change in EnvironmentSettings.sublime-settings:
   Those variables can be all capitalised if you wish.  
   ex: "project" -> "PROJECT"
     
-
-Note
----
-
+**Note:**  
 The variables in **env_file** are always set first. This means that **env** can potentially override what **env_file** did.
 
-Installation
----
+- - -
+## Installation
 
 #### Using Package Control:
 
