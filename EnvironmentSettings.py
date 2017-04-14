@@ -98,16 +98,25 @@ def print_result(variables_set, prefix):
 
     if len(variables_set[1]): #there are varaibles set from sublime's
         print("\n{} FROM SUBLIME:".format(prefix))
-        for pair in variables_set[1]:
-            print( log_format.format(pair[0], pair[1]) )
+        if not variables_set[1]:
+            print(('{:>'+str(max_key_length)+'}').format('None'))
+        else:
+            for pair in variables_set[1]:
+                print( log_format.format(pair[0], pair[1]) )
 
     print("\n{} FROM FILE: {}".format(prefix, variables_set[0]))
-    for pair in variables_set[2]:
-        print( log_format.format(pair[0], pair[1]) )
+    if not variables_set[0]:
+        print(('{:>'+str(max_key_length)+'}').format('None'))
+    else:            
+        for pair in variables_set[2]:
+            print( log_format.format(pair[0], pair[1]) )
     
     print("\n{}:".format(prefix))
-    for pair in variables_set[3]:
-        print( log_format.format(pair[0], pair[1]) )
+    if not variables_set[3]:
+        print(('{:>'+str(max_key_length)+'}').format('None'))
+    else:   
+        for pair in variables_set[3]:
+            print( log_format.format(pair[0], pair[1]) )
     
     print()
 
@@ -140,7 +149,7 @@ def set_project_environment():
     # reset the environment
     sets = sublime.load_settings("EnvironmentSettings.sublime-settings")
     if sets.get('print_output'):
-        print("RESET ENVIRONMENT TO DEFAULT STATE.")
+        print("\n\nRESET ENVIRONMENT TO DEFAULT STATE.")
     os.environ = copy.deepcopy(sDEFAULT_ENV)
 
     # collect the new variables
@@ -175,10 +184,28 @@ class ProjectEnvironmentListener(sublime_plugin.EventListener):
             self.active_project = sublime.active_window().project_file_name()
             if self.active_project:
                 set_project_environment()
+                self.__change_project_data()
             else:
                 sets = sublime.load_settings("EnvironmentSettings.sublime-settings")
                 if sets.get('print_output'):
                     print("EnvironmentSettings: project file not found")
+
+    def on_post_save(self, view):
+        if view.file_name() == sublime.active_window().project_file_name():        
+            self.__change_project_data()
+
+    def __change_project_data(self):
+        sets = sublime.load_settings("EnvironmentSettings.sublime-settings")
+        data = sublime.active_window().project_data()
+        for folder in data['folders']:
+            # print(folder['path'])
+            if "path-template" in folder:
+                template = folder['path-template']
+                resolved = os.path.expandvars(template)
+                if sets.get('print_output'):
+                    print("template {} resolved in {}".format(template, resolved)) 
+                folder['path'] = resolved
+        sublime.active_window().set_project_data(data)
 
 
 class ForceProjectEnvironmentCommand(sublime_plugin.WindowCommand):
