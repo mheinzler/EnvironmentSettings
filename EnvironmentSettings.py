@@ -166,6 +166,20 @@ def set_project_environment():
         print_result(variables_set, "SETTING PROJECT ENVIRONMENT")
 
 
+def update_project_data():
+    sets = sublime.load_settings("EnvironmentSettings.sublime-settings")
+    data = sublime.active_window().project_data()
+    for folder in data['folders']:
+        # print(folder['path'])
+        if "path-template" in folder:
+            template = folder['path-template']
+            resolved = os.path.expandvars(template)
+            if sets.get('print_output'):
+                print("template {} resolved in {}".format(template, resolved)) 
+            folder['path'] = resolved
+    sublime.active_window().set_project_data(data)
+
+
 class ProjectEnvironmentListener(sublime_plugin.EventListener):
     def __init__(self, *args, **kwds):
         super(ProjectEnvironmentListener, self).__init__(*args, **kwds)
@@ -184,7 +198,7 @@ class ProjectEnvironmentListener(sublime_plugin.EventListener):
             self.active_project = sublime.active_window().project_file_name()
             if self.active_project:
                 set_project_environment()
-                self.__change_project_data()
+                update_project_data()
             else:
                 sets = sublime.load_settings("EnvironmentSettings.sublime-settings")
                 if sets.get('print_output'):
@@ -192,22 +206,14 @@ class ProjectEnvironmentListener(sublime_plugin.EventListener):
 
     def on_post_save(self, view):
         if view.file_name() == sublime.active_window().project_file_name():        
-            self.__change_project_data()
-
-    def __change_project_data(self):
-        sets = sublime.load_settings("EnvironmentSettings.sublime-settings")
-        data = sublime.active_window().project_data()
-        for folder in data['folders']:
-            # print(folder['path'])
-            if "path-template" in folder:
-                template = folder['path-template']
-                resolved = os.path.expandvars(template)
-                if sets.get('print_output'):
-                    print("template {} resolved in {}".format(template, resolved)) 
-                folder['path'] = resolved
-        sublime.active_window().set_project_data(data)
+            update_project_data()
 
 
 class ForceProjectEnvironmentCommand(sublime_plugin.WindowCommand):
     def run(self):
         set_project_environment()
+
+
+class UpdateProjectDataCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        update_project_data()
