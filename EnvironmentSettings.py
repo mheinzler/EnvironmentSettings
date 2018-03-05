@@ -31,7 +31,7 @@ def collect_variables(settings):
 
     if "project_path" in sublime_vars:
         project_path = sublime_vars["project_path"]
-        os.chdir(sublime_vars["project_path"])
+        os.chdir(project_path)
 
     variables_set = ["",[],[],[]]
 
@@ -39,6 +39,7 @@ def collect_variables(settings):
     # note: we will collect only those variables that actually makes sense to have
     # avoiding for example variables sucha s "file", "file_path" or "project_extension"
     sets = sublime.load_settings("EnvironmentSettings.sublime-settings")
+    print(sets.get('set_sublime_variables'))
     if sets.get('set_sublime_variables'):
         keys = ["project_path", "project", "project_name", "project_base_name", "packages"]
         prefix = sets.get('sublime_variables_prefix', default='')
@@ -66,7 +67,11 @@ def collect_variables(settings):
                 variables_set[2].append((key, value))
 
         else: # this is unix
-            cap_regex = re.compile(r"(?:(?i)set)\s([\w%$/]*)=(?:(?![\"'])(\S*)|([\"'])(.+?)(?=\3))", re.MULTILINE)
+            if(platform.system()=="Darwin"):
+                set_env_command = 'export'
+            else:
+                set_env_command = 'set'
+            cap_regex = re.compile(r"(?:(?i){})\s([\w%$/]*)=(?:(?![\"'])(\S*)|([\"'])(.+?)(?=\3))".format(set_env_command), re.MULTILINE)
 
             it = re.finditer(cap_regex, lines)
             for m in it:
@@ -159,6 +164,8 @@ def set_project_environment():
     # now set the environment with the data collected above 
     for varsets in variables_set[1:]:
         for pair in varsets:
+            print(pair)
+            print(os.path.expandvars(pair[1]))
             os.environ[pair[0]] = os.path.expandvars(pair[1])
 
     # print out the result if the settings allow it
