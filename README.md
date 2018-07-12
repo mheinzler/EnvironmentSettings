@@ -222,7 +222,7 @@ An excerpt from Sublime documentation that explains why:
 >
 > [Sublime's] variables will be expanded within any string specified in the "cmd", "shell_cmd" or "working_dir" options.
 >
-> If a literal $ needs to be specified in one of these options, it must be escaped with a \. Since JSON uses backslashes for escaping also, $ will need to be written as **\\$**
+> If a literal $ needs to be specified in one of these options, it must be escaped with a \. Since JSON uses backslashes for escaping also, $ will need to be written as **\\\\$**
 
 - - -
 ## Installation
