@@ -34,7 +34,7 @@ the possible values are the ones returned by the Python's function platform.syst
 * Darwin (Mac OSX)
 * Windows
 
-At least one must be present.  
+At least one **must** be present.  
 For example:
 ```json
 {
@@ -122,7 +122,7 @@ there are few settings you can change in EnvironmentSettings.sublime-settings:
   "project_path", "project", "project_name", "project_base_name", "packages"
 
 * **sublime_variables_prefix**  
-  It may be useful to add a prefix to those variables so that they don't confict with yours
+  It may be useful to add a prefix to those variables so that they don't conflict with yours
 
 * **sublime_variables_capitalized**  
   Those variables can be all capitalised if you wish.  
@@ -130,6 +130,99 @@ there are few settings you can change in EnvironmentSettings.sublime-settings:
     
 **Note:**  
 The variables in **env_file** are always set first. This means that **env** can potentially override what **env_file** did.
+
+---
+
+## Using the variables in a build_system
+
+Once you have set the variables with EnvironmentSettings, you can use it in many different ways.
+One common use for them is in Sublime's builds.
+
+Imagine you have set a variable called `MY_TEST_VARIABLE` set to `Hello World!!`, then you can have:
+```json
+{
+    "name": "Super Test",
+    "shell_cmd": "echo %MY_TEST_VARIABLE%"
+}
+```
+In any window open in Sublime, launching the `Super Test` builder, and the result will be exactly `Hello World!!`
+
+![evtest2.png](https://bitbucket.org/repo/LgX876/images/3702956587-evtest2.png)
+
+![evtest.png](https://bitbucket.org/repo/LgX876/images/3731143133-evtest.png)
+
+as you can see in the images above, all can be done inside a sublime-project file, like this:
+
+
+```json
+{
+	"build_systems":
+	[
+		{
+			"name": "Super Test",
+			"shell_cmd": "echo %MY_TEST_VARIABLE%"
+		}
+	],
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	],
+	"settings":
+	{
+		"env":
+		{
+			"Windows":
+			{
+				"MY_TEST_VARIABLE": "Hello World!!"
+			}
+		}
+	}
+}
+```
+
+### A small advise if you work on Linux or Mac
+
+The example above was for Windows, you can do the same for Linux and Mac obviously, but you have to be sure you escape the variable.
+
+
+```json
+{
+	"build_systems":
+	[
+		{
+			"name": "Super Test",
+			"shell_cmd": "echo \\$MY_TEST_VARIABLE"
+		}
+	],
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	],
+	"settings":
+	{
+		"env":
+		{
+			"Darwin":
+			{
+				"MY_TEST_VARIABLE": "Hello World!!"
+			}
+		}
+	}
+}
+```
+
+Note the double backslash before `$MY_TEST_VARIABLE`. This is extremely important.
+An excerpt from Sublime documentation that explains why:
+
+> **Variables**
+>
+> [Sublime's] variables will be expanded within any string specified in the "cmd", "shell_cmd" or "working_dir" options.
+>
+> If a literal $ needs to be specified in one of these options, it must be escaped with a \. Since JSON uses backslashes for escaping also, $ will need to be written as **\\$**
 
 - - -
 ## Installation
