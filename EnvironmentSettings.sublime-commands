@@ -1,0 +1,4 @@
+[
+   { "caption": "Environment Settings: Apply Project Environment", "command": "force_project_environment"},
+   { "caption": "Environment Settings: Update Project Data", "command": "update_project_data"},
+]
