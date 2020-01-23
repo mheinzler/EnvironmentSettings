@@ -39,7 +39,7 @@ def collect_variables(settings):
     # note: we will collect only those variables that actually makes sense to have
     # avoiding for example variables sucha s "file", "file_path" or "project_extension"
     sets = sublime.load_settings("EnvironmentSettings.sublime-settings")
-    print(sets.get('set_sublime_variables'))
+    # print(sets.get('set_sublime_variables'))
     if sets.get('set_sublime_variables'):
         keys = ["project_path", "project", "project_name", "project_base_name", "packages"]
         prefix = sets.get('sublime_variables_prefix', default='')
