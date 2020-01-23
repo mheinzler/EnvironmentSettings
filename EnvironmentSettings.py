@@ -13,13 +13,13 @@ def get_settings(settings):
 
     envs_file = None
     envs = None
-    if envs_file_dict and platform.system() in envs_file_dict:    
+    if envs_file_dict and platform.system() in envs_file_dict:
         envs_file = os.path.expanduser(envs_file_dict[platform.system()])
     if envs_dict and platform.system() in envs_dict:
         envs = envs_dict[platform.system()]
 
     return (envs_file, envs)
-    
+
 
 def collect_variables(settings):
     envs_file, envs = get_settings(settings)
@@ -47,7 +47,7 @@ def collect_variables(settings):
         for key in keys:
             env_key = prefix+key
             if capit:
-                env_key = env_key.upper()  
+                env_key = env_key.upper()
             variables_set[1].append((env_key, sublime_vars[key]))
 
     # collect the variables from an external file
@@ -60,7 +60,7 @@ def collect_variables(settings):
 
         if(platform.system() == "Windows"):
             cap_regex = re.compile(r"(?:(?i)set)\s([\w%$/]*)=(.+)", re.MULTILINE)
-            
+
             it = re.finditer(cap_regex, lines)
             for m in it:
                 key, value = m.groups()
@@ -80,7 +80,7 @@ def collect_variables(settings):
                     variables_set[2].append((key, value))
                 else:
                     variables_set[2].append((key, quotedValue))
-            
+
     # collect the variables in the dictionary "envs"
     if envs:
         for key, value in envs.items():
@@ -112,27 +112,27 @@ def print_result(variables_set, prefix):
     print("\n{} FROM FILE: {}".format(prefix, variables_set[0]))
     if not variables_set[0]:
         print(('{:>'+str(max_key_length)+'}').format('None'))
-    else:            
+    else:
         for pair in variables_set[2]:
             print( log_format.format(pair[0], pair[1]) )
-    
+
     print("\n{}:".format(prefix))
     if not variables_set[3]:
         print(('{:>'+str(max_key_length)+'}').format('None'))
-    else:   
+    else:
         for pair in variables_set[3]:
             print( log_format.format(pair[0], pair[1]) )
-    
+
     print()
 
 
 # this is fired only once when the plugin gets loaded
 def plugin_loaded():
     sets = sublime.load_settings("EnvironmentSettings.sublime-settings")
-    
+
     variables_set = collect_variables(sets)
 
-    # now set the environment with the data collected above 
+    # now set the environment with the data collected above
     for varsets in variables_set[1:]:
         for pair in varsets:
             os.environ[pair[0]] = os.path.expandvars(pair[1])
@@ -161,7 +161,7 @@ def set_project_environment():
     proj_sets = proj_data['settings']
     variables_set = collect_variables(proj_sets)
 
-    # now set the environment with the data collected above 
+    # now set the environment with the data collected above
     for varsets in variables_set[1:]:
         for pair in varsets:
             print(pair)
@@ -182,7 +182,7 @@ def update_project_data():
             template = folder['path-template']
             resolved = os.path.expandvars(template)
             if sets.get('print_output'):
-                print("template {} resolved in {}".format(template, resolved)) 
+                print("template {} resolved in {}".format(template, resolved))
             folder['path'] = resolved
     sublime.active_window().set_project_data(data)
 
@@ -212,7 +212,7 @@ class ProjectEnvironmentListener(sublime_plugin.EventListener):
                     print("EnvironmentSettings: project file not found")
 
     def on_post_save(self, view):
-        if view.file_name() == sublime.active_window().project_file_name():        
+        if view.file_name() == sublime.active_window().project_file_name():
             update_project_data()
 
 
